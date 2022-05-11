@@ -58,7 +58,7 @@ export default async function scrapeGoogleImages(
   searchUrl.searchParams.append('q', search);
 
   // Open browser & search for images
-  const browser = await puppeteer.launch({ headless: false });
+  const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
   const page = (await browser.pages()).pop()!;
   const response = await page
     .goto(searchUrl.toString(), {
