@@ -27,6 +27,10 @@ app.use(
   })
 );
 
+app.get('/', (req, res) => {
+  res.end('Sever is up & running...');
+});
+
 app.post('/scrape-google-images', async (req, res) => {
   const { search, numOfImages, ...searchOptions } = req.body;
   if (!search || !numOfImages) {
