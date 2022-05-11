@@ -10,7 +10,7 @@ interface APIResponse {
 }
 
 const app = express();
-const port = 4000;
+const port = process.env.PORT || 4000;
 const tasks = new Map<string, Task>();
 const outputFolderPath = `${__dirname}/output`;
 
