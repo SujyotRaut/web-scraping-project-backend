@@ -15,9 +15,8 @@ const tasks = new Map<string, Task>();
 const outputFolderPath = `${__dirname}/output`;
 
 // Delete all files in output folder
-const isOutputFolderExist = fs.existsSync(outputFolderPath);
-if (isOutputFolderExist) fs.rmSync(outputFolderPath, { recursive: true });
-if (!isOutputFolderExist) fs.mkdirSync(outputFolderPath);
+if (fs.existsSync(outputFolderPath)) fs.rmSync(outputFolderPath, { recursive: true });
+if (!fs.existsSync(outputFolderPath)) fs.mkdirSync(outputFolderPath);
 
 // Express middleware
 app.use(express.json());
@@ -59,6 +58,7 @@ app.post('/scrape-google-images', async (req, res) => {
     return task;
   };
 
+  console.log(search);
   scrapeGoogleImages(search, numOfImages, onTaskCreate, searchOptions);
 });
 

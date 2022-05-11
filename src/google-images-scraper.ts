@@ -186,10 +186,10 @@ async function _downloadAndCompressImages(images: string[], task: Task) {
 
   archive.finalize();
 
-  // Delete zip after 1 hour
+  // Delete zip after 30 minutes
   setTimeout(() => {
     if (fs.existsSync(pathToZip)) fs.rmSync(pathToZip);
-  }, 60 * 60 * 1000);
+  }, 30 * 60 * 1000);
 }
 
 function _addSearchOptionsToSearchParams(options: SearchOptions) {
