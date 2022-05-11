@@ -15,8 +15,9 @@ const tasks = new Map<string, Task>();
 const outputFolderPath = `${__dirname}/output`;
 
 // Delete all files in output folder
-fs.rmSync(outputFolderPath, { recursive: true });
-fs.mkdirSync(outputFolderPath);
+const isOutputFolderExist = fs.existsSync(outputFolderPath);
+if (isOutputFolderExist) fs.rmSync(outputFolderPath, { recursive: true });
+if (!isOutputFolderExist) fs.mkdirSync(outputFolderPath);
 
 // Express middleware
 app.use(express.json());
