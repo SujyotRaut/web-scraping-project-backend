@@ -5,10 +5,9 @@ import fs from 'fs';
 import puppeteer from 'puppeteer';
 import { URL } from 'url';
 
-const imgSelector = '#islrg > div.islrc > div > a:nth-child(2)';
-const searchUrl = new URL('https://www.google.com/search?tbm=isch');
+const IMG_SELECTOR = '#islrg > div.islrc > div > a:nth-child(2)';
 
-interface SearchOptions {
+interface SearchFilter {
   color?:
     | 'gray'
     | 'trans'
@@ -41,7 +40,7 @@ export default async function scrapeGoogleImages(
   search: string,
   numOfImages: number,
   onTaskCreated: (task: Task) => Task,
-  options?: SearchOptions
+  filter?: SearchFilter
 ): Promise<string[]> {
   // Create taskProgress object & pass it to onTaskCreated
   let task = onTaskCreated({
@@ -51,11 +50,10 @@ export default async function scrapeGoogleImages(
     progress: '',
   });
 
-  // If SearchOptions are given add to searchParams
-  if (options) _addSearchOptionsToSearchParams(options);
-
-  // Add search query to searchParams
+  // Add search query & search filter to searchUrl
+  const searchUrl = new URL('https://www.google.com/search?tbm=isch');
   searchUrl.searchParams.append('q', search);
+  if (filter) _addSearchOptionsToSearchParams(filter, searchUrl);
 
   // Open browser & search for images
   const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
@@ -73,7 +71,7 @@ export default async function scrapeGoogleImages(
   if (!response) return [];
 
   // If no images found, return an empty array
-  let images = await page.$$(imgSelector);
+  let images = await page.$$(IMG_SELECTOR);
   if (images.length === 0) {
     task.msg = 'No Images Found';
     task.status = 'FAIL';
@@ -109,7 +107,7 @@ export default async function scrapeGoogleImages(
     });
 
     // Select all images & break the loop if end of the page is reached
-    images = await page.$$(imgSelector);
+    images = await page.$$(IMG_SELECTOR);
     task.progress = `${images.length} Images Found`;
 
     if (endOfPageReached) break;
@@ -192,7 +190,7 @@ async function _downloadAndCompressImages(images: string[], task: Task) {
   }, 30 * 60 * 1000);
 }
 
-function _addSearchOptionsToSearchParams(options: SearchOptions) {
+function _addSearchOptionsToSearchParams(options: SearchFilter, searchUrl: URL) {
   let optionsParams = '';
   if (options.size) optionsParams += `isz:${options.size},`;
   if (options.color) optionsParams += `ic:${options.color},`;
